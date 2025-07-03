@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,11 +7,16 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import RecommendItem from '../components/RecommendItem';
+import { shopService, Item } from '../services';
 
 const MarketScreen = ({ navigation }: any) => {
   const [selectedCategory, setSelectedCategory] = useState('전체상품');
+  const [items, setItems] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const categories = [
     '전체상품',
@@ -21,17 +26,33 @@ const MarketScreen = ({ navigation }: any) => {
     'コスメ',
     'ファッション',
     '雑貨グッズ',
-    '新着商品',
+    '新착商품',
     'ぶくの자동판매기'
   ];
 
-  const featuredProducts = [
-    { id: 1, name: '【アラサン】洗顔フォーム', price: 2500, category: 'コスメ' },
-    { id: 2, name: '【アラサン】美容フェイシャル', price: 500, category: 'コスメ' },
-    { id: 3, name: '【アラサン】スタイル', price: 1500, category: 'ファッション' },
-  ];
+  // 컴포넌트 마운트 시 상품 데이터 로드
+  useEffect(() => {
+    loadItems();
+  }, []);
 
-  const goToProductDetail = (product: any) => {
+  const loadItems = async () => {
+    try {
+      setLoading(true);
+      const itemsData = await shopService.getItems();
+      setItems(itemsData);
+    } catch (error: any) {
+      Alert.alert('오류', error.message || '상품을 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 카테고리에 따른 상품 필터링
+  const filteredItems = selectedCategory === '전체상품' 
+    ? items 
+    : items.filter(item => item.category === selectedCategory);
+
+  const goToProductDetail = (product: Item) => {
     navigation.navigate('ProductDetail', { product });
   };
 
@@ -81,28 +102,39 @@ const MarketScreen = ({ navigation }: any) => {
 
         {/* 추천 상품 섹션 */}
         <View style={styles.recommendedSection}>
-          <Text style={styles.sectionTitle}>最近気になったおすすめの洗顔用品</Text>
+          <Text style={styles.sectionTitle}>추천 상품</Text>
           
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.productHorizontalList}>
-            {featuredProducts.map((product) => (
-              <TouchableOpacity 
-                key={product.id}
-                style={styles.productCard}
-                onPress={() => goToProductDetail(product)}
-              >
-                {/* 상품 이미지 placeholder */}
-                <View style={styles.productImagePlaceholder}>
-                  <Text style={styles.imagePlaceholder}>사진</Text>
-                </View>
-                
-                <View style={styles.productInfo}>
-                  <Text style={styles.productBrand}>商</Text>
-                  <Text style={styles.productName}>{product.name}</Text>
-                  <Text style={styles.productPrice}>{product.price.toLocaleString()}円</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#FF6B35" />
+              <Text style={styles.loadingText}>상품을 불러오는 중...</Text>
+            </View>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.productHorizontalList}>
+              {filteredItems.slice(0, 5).map((product) => (
+                <TouchableOpacity 
+                  key={product.id}
+                  style={styles.productCard}
+                  onPress={() => goToProductDetail(product)}
+                >
+                  {/* 상품 이미지 placeholder */}
+                  <View style={styles.productImagePlaceholder}>
+                    {product.image_url ? (
+                      <Image source={{ uri: product.image_url }} style={styles.productImage} />
+                    ) : (
+                      <Text style={styles.imagePlaceholder}>사진</Text>
+                    )}
+                  </View>
+                  
+                  <View style={styles.productInfo}>
+                    <Text style={styles.productBrand}>상품</Text>
+                    <Text style={styles.productName} numberOfLines={2}>{product.name}</Text>
+                    <Text style={styles.productPrice}>{product.point_price.toLocaleString()}P</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
         </View>
 
         {/* 하단 추천 상품 */}
@@ -336,6 +368,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',  
     fontWeight: '500',
+  },
+  loadingContainer: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#666',
+    fontSize: 14,
+  },
+  productImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
 });
 

@@ -6,21 +6,67 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
+import { authService } from '../services';
 
 const RegisterScreen = ({ navigation }: any) => {
-  const [id, setId] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
-  const [name, setName] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [gender, setGender] = useState('');
+  const [birthYear, setBirthYear] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleRegister = () => {
-    // 회원가입 로직
-    navigation.navigate('Login');
+  const handleRegister = async () => {
+    if (!username.trim() || !password.trim()) {
+      Alert.alert('오류', '아이디와 비밀번호를 모두 입력해주세요.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('오류', '비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const registerData: any = {
+        username: username.trim(),
+        password: password.trim(),
+      };
+
+      // 선택적 필드 추가
+      if (gender.trim()) {
+        registerData.gender = gender.trim();
+      }
+      if (birthYear.trim()) {
+        const year = parseInt(birthYear.trim(), 10);
+        if (!isNaN(year) && year > 1900 && year <= new Date().getFullYear()) {
+          registerData.birth_year = year;
+        }
+      }
+
+      await authService.register(registerData);
+
+      Alert.alert('회원가입 성공', '회원가입이 완료되었습니다. 로그인해주세요.', [
+        {
+          text: '확인',
+          onPress: () => {
+            navigation.goBack(); // 로그인 화면으로 돌아가기
+          },
+        },
+      ]);
+    } catch (error: any) {
+      Alert.alert('회원가입 실패', error.message || '회원가입에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const goToLogin = () => {
-    navigation.navigate('Login');
+    navigation.goBack(); // 로그인 화면으로 돌아가기
   };
 
   return (
@@ -34,9 +80,10 @@ const RegisterScreen = ({ navigation }: any) => {
           <TextInput
             style={styles.input}
             placeholder="ID"
-            value={id}
-            onChangeText={setId}
+            value={username}
+            onChangeText={setUsername}
             placeholderTextColor="#999"
+            autoCapitalize="none"
           />
           
           <TextInput
@@ -50,25 +97,42 @@ const RegisterScreen = ({ navigation }: any) => {
 
           <TextInput
             style={styles.input}
-            placeholder="전화번호"
-            value={phone}
-            onChangeText={setPhone}
-            keyboardType="phone-pad"
+            placeholder="PW 확인"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
             placeholderTextColor="#999"
           />
 
           <TextInput
             style={styles.input}
-            placeholder="이름"
-            value={name}
-            onChangeText={setName}
+            placeholder="성별 (선택사항)"
+            value={gender}
+            onChangeText={setGender}
+            placeholderTextColor="#999"
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="출생연도 (선택사항)"
+            value={birthYear}
+            onChangeText={setBirthYear}
+            keyboardType="numeric"
             placeholderTextColor="#999"
           />
         </View>
 
         {/* 회원가입 버튼 */}
-        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-          <Text style={styles.registerButtonText}>Register</Text>
+        <TouchableOpacity 
+          style={[styles.registerButton, isLoading && styles.registerButtonDisabled]} 
+          onPress={handleRegister}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.registerButtonText}>Register</Text>
+          )}
         </TouchableOpacity>
 
         {/* 로그인 링크 */}
@@ -115,6 +179,9 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
     marginBottom: 20,
+  },
+  registerButtonDisabled: {
+    backgroundColor: '#ccc',
   },
   registerButtonText: {
     color: 'white',

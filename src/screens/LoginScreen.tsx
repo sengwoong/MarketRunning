@@ -6,14 +6,32 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 
 const LoginScreen = ({ navigation }: any) => {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('user'); // 기본값으로 테스트 계정 설정
+  const [password, setPassword] = useState('user');
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
 
-  const handleLogin = () => {
-    navigation.navigate('MainTabs');
+  const handleLogin = async () => {
+    if (!username.trim() || !password.trim()) {
+      Alert.alert('오류', '아이디와 비밀번호를 모두 입력해주세요.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await login(username.trim(), password.trim());
+      // 로그인 성공 시 자동으로 메인 화면으로 이동됨 (AuthContext에서 처리)
+    } catch (error: any) {
+      Alert.alert('로그인 실패', error.message || '로그인에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const goToRegister = () => {
@@ -38,9 +56,10 @@ const LoginScreen = ({ navigation }: any) => {
           <TextInput
             style={styles.input}
             placeholder="ID"
-            value={id}
-            onChangeText={setId}
+            value={username}
+            onChangeText={setUsername}
             placeholderTextColor="#999"
+            autoCapitalize="none"
           />
           
           <TextInput
@@ -54,8 +73,16 @@ const LoginScreen = ({ navigation }: any) => {
         </View>
 
         {/* 로그인 버튼 */}
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>LOGIN</Text>
+        <TouchableOpacity 
+          style={[styles.loginButton, isLoading && styles.loginButtonDisabled]} 
+          onPress={handleLogin}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.loginButtonText}>LOGIN</Text>
+          )}
         </TouchableOpacity>
 
         {/* 회원가입 링크 */}
@@ -119,6 +146,9 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
     marginBottom: 20,
+  },
+  loginButtonDisabled: {
+    backgroundColor: '#ccc',
   },
   loginButtonText: {
     color: 'white',

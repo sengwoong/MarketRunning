@@ -7,74 +7,97 @@ import {
   FlatList,
   TouchableOpacity,
   Dimensions,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
+import { trophyService, UserTrophy } from '../services';
 
 const { height: screenHeight } = Dimensions.get('window');
 
 const TrophyScreen = ({ navigation }: any) => {
-  const [trophies, setTrophies] = useState([
-    { id: 1, count: 300, title: '300성공', achieved: true },
-    { id: 2, count: 20, title: '20성공', achieved: true },
-    { id: 3, count: 100, title: '100성공', achieved: true },
-    { id: 4, count: 50, title: '50성공', achieved: false },
-    { id: 5, count: 500, title: '500성공', achieved: false },
-    { id: 6, count: 1000, title: '1000성공', achieved: false },
-  ]);
+  const [trophies, setTrophies] = useState<UserTrophy[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] = useState(false);
+  // 컴포넌트 마운트 시 트로피 데이터 로드
+  useEffect(() => {
+    loadTrophies();
+  }, []);
 
-  // 무한스크롤 시뮬레이션
-  const loadMoreTrophies = () => {
-    if (loading) return;
-    
-    setLoading(true);
-    setTimeout(() => {
-      const newTrophies = [
-        { id: Date.now() + 1, count: 750, title: '750성공', achieved: false },
-        { id: Date.now() + 2, count: 1500, title: '1500성공', achieved: false },
-      ];
-      setTrophies(prev => [...prev, ...newTrophies]);
+  const loadTrophies = async () => {
+    try {
+      setLoading(true);
+      const userTrophies = await trophyService.getUserTrophies();
+      setTrophies(userTrophies);
+    } catch (error: any) {
+      Alert.alert('오류', error.message || '트로피 정보를 불러오는데 실패했습니다.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
-  const renderTrophyItem = ({ item }: any) => (
+  const renderTrophyItem = ({ item }: { item: UserTrophy }) => (
     <View style={styles.trophy__item}>
       <View style={styles.trophy__circleContainer}>
         <View style={[
           styles.trophy__circle,
-          item.achieved ? styles.trophy__circleAchieved : styles.trophy__circleLocked
+          item.completed ? styles.trophy__circleAchieved : styles.trophy__circleLocked
         ]}>
-          {item.achieved && (
+          {item.completed && (
             <View style={styles.trophy__checkmark}>
               <Text style={styles.trophy__checkmarkIcon}>✓</Text>
             </View>
           )}
           
-          {/* 캐릭터 텍스트 */}
-          <Text style={styles.trophy__characterText}>캐릭터</Text>
+          {/* 트로피 아이콘 */}
+          <Text style={styles.trophy__characterText}>🏆</Text>
+        </View>
+        
+        {/* 진행도 표시 */}
+        <View style={styles.trophy__progressContainer}>
+          <Text style={styles.trophy__progressText}>
+            {item.progress} / {item.target}
+          </Text>
+          <View style={styles.trophy__progressBar}>
+            <View 
+              style={[
+                styles.trophy__progressFill,
+                { width: `${Math.min((item.progress / item.target) * 100, 100)}%` }
+              ]}
+            />
+          </View>
         </View>
       </View>
       
       <View style={styles.trophy__textSection}>
         <Text style={styles.trophy__title}>{item.title}</Text>
+        <Text style={styles.trophy__description}>{item.description || ''}</Text>
       </View>
     </View>
   );
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.trophy}>
+        <View style={styles.trophy__loadingContainer}>
+          <ActivityIndicator size="large" color="#FF6B35" />
+          <Text style={styles.trophy__loadingText}>트로피 정보를 불러오는 중...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.trophy}>
-
       {/* 트로피 리스트 */}
       <FlatList
         data={trophies}
         renderItem={renderTrophyItem}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        onEndReached={loadMoreTrophies}
-        onEndReachedThreshold={0.1}
         contentContainerStyle={styles.trophy__list}
         ItemSeparatorComponent={() => <View style={styles.trophy__separator} />}
+        refreshing={loading}
+        onRefresh={loadTrophies}
       />
     </SafeAreaView>
   );
@@ -174,6 +197,59 @@ const styles = StyleSheet.create({
   // Element: trophy__separator
   trophy__separator: {
     height: 12,
+  },
+
+  // Element: trophy__progressContainer
+  trophy__progressContainer: {
+    width: '80%',
+    marginTop: 10,
+    alignItems: 'center',
+  },
+
+  // Element: trophy__progressText
+  trophy__progressText: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+    fontWeight: '500',
+  },
+
+  // Element: trophy__progressBar
+  trophy__progressBar: {
+    width: '100%',
+    height: 8,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+
+  // Element: trophy__progressFill
+  trophy__progressFill: {
+    height: '100%',
+    backgroundColor: '#FF6B35',
+    borderRadius: 4,
+  },
+
+  // Element: trophy__description
+  trophy__description: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 5,
+  },
+
+  // Element: trophy__loadingContainer
+  trophy__loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  // Element: trophy__loadingText
+  trophy__loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666',
   },
 });
 
