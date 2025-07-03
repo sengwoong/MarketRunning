@@ -6,6 +6,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Image,
 } from 'react-native';
 
 const StoreMapScreen = ({ navigation }: any) => {
@@ -21,73 +22,56 @@ const StoreMapScreen = ({ navigation }: any) => {
     // 매장 상세 정보 표시
   };
 
+  // 추천 상품 예시
+  const recommend = {
+    name: '暁機製作所 アカツキ生水 500 ml',
+    price: '500円',
+    image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+    desc: 'こういう商品はどうですか？',
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton} 
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>← 뒤로</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>매장 위치</Text>
-        <View style={styles.placeholder} />
+        <Text style={styles.menu}>≡</Text>
+        <Text style={styles.headerText}>shop</Text>
       </View>
 
-      {/* 지도 영역 */}
-      <View style={styles.mapContainer}>
-        <View style={styles.map}>
-          {/* 지도 배경 */}
-          <View style={styles.mapBackground}>
-            <Text style={styles.mapLabel}>서울시</Text>
-          </View>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* 안내문구 */}
+        <Text style={styles.topNotice}>近くの自動販売機を探してみましょう！</Text>
 
-          {/* 매장 마커들 */}
-          {stores.map((store) => (
-            <TouchableOpacity
-              key={store.id}
-              style={[
-                styles.storeMarker,
-                { left: `${store.x}%`, top: `${store.y}%` }
-              ]}
-              onPress={() => handleStorePress(store)}
-            >
-              <Text style={styles.markerEmoji}>{store.emoji}</Text>
-              <Text style={styles.markerText}>{store.name}</Text>
-            </TouchableOpacity>
-          ))}
+        {/* 지도 이미지 */}
+        <View style={styles.mapWrapper}>
+          <Image
+            source={{ uri: 'https://cdn.pixabay.com/photo/2017/01/10/19/05/map-1974699_1280.png' }}
+            style={styles.mapImage}
+            resizeMode="cover"
+          />
+        </View>
 
-          {/* 현재 위치 */}
-          <View style={styles.currentLocation}>
-            <Text style={styles.currentLocationText}>📍</Text>
-            <Text style={styles.currentLocationLabel}>현재 위치</Text>
+        {/* 추천 상품 카드 */}
+        <View style={styles.recommendCard}>
+          <View style={styles.recommendRow}>
+            <Image source={{ uri: recommend.image }} style={styles.recommendImage} />
+            <View style={styles.recommendInfo}>
+              <Text style={styles.recommendDesc}>{recommend.desc}</Text>
+              <Text style={styles.recommendPrice}>{recommend.price}</Text>
+              <Text style={styles.recommendName}>{recommend.name}</Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* 매장 목록 */}
-      <ScrollView style={styles.storeList}>
-        <Text style={styles.storeListTitle}>근처 매장</Text>
-        {stores.map((store) => (
-          <TouchableOpacity 
-            key={store.id} 
-            style={styles.storeItem}
-            onPress={() => handleStorePress(store)}
-          >
-            <View style={styles.storeIcon}>
-              <Text style={styles.storeEmoji}>{store.emoji}</Text>
-            </View>
-            <View style={styles.storeInfo}>
-              <Text style={styles.storeName}>{store.name}</Text>
-              <Text style={styles.storeAddress}>{store.address}</Text>
-              <Text style={styles.storeDistance}>약 2.3km</Text>
-            </View>
-            <TouchableOpacity style={styles.directionButton}>
-              <Text style={styles.directionButtonText}>길찾기</Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
-        ))}
+        {/* 버튼 */}
+        <TouchableOpacity style={styles.kakoButton}>
+          <Text style={styles.kakoButtonText}>kako</Text>
+        </TouchableOpacity>
+
+        {/* 하단 안내문구 */}
+        <Text style={styles.bottomNotice}>
+          おすすめが気に召しませんでしたか？{ '\n' }ご相談対応も可能です。ぜひお問い合わせください。
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -96,154 +80,121 @@ const StoreMapScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 10,
+    backgroundColor: '#fff',
   },
-  backButton: {
-    padding: 5,
+  menu: {
+    color: '#222',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
-  backButtonText: {
+  headerText: {
+    color: '#222',
     fontSize: 16,
-    color: '#333',
+    fontWeight: '500',
   },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+  scrollContent: {
+    paddingBottom: 24,
+    minHeight: '100%',
+    alignItems: 'center',
   },
-  placeholder: {
-    width: 60,
+  topNotice: {
+    fontSize: 15,
+    color: '#222',
+    marginTop: 10,
+    marginBottom: 12,
+    textAlign: 'left',
+    alignSelf: 'flex-start',
+    marginLeft: 18,
+    fontWeight: '400',
   },
-  mapContainer: {
-    height: 300,
-    backgroundColor: '#f0f8ff',
-    margin: 20,
-    borderRadius: 15,
+  mapWrapper: {
+    width: 230,
+    height: 160,
+    borderRadius: 16,
     overflow: 'hidden',
-  },
-  map: {
-    flex: 1,
-    position: 'relative',
-  },
-  mapBackground: {
-    flex: 1,
     backgroundColor: '#e6f3ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
+    marginBottom: 18,
   },
-  mapLabel: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#87CEEB',
-    opacity: 0.5,
+  mapImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 16,
   },
-  storeMarker: {
-    position: 'absolute',
-    alignItems: 'center',
-    transform: [{ translateX: -15 }, { translateY: -15 }],
+  recommendCard: {
+    width: 230,
+    backgroundColor: '#faf8f6',
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
-  markerEmoji: {
-    fontSize: 24,
-    marginBottom: 2,
-  },
-  markerText: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#333',
-    backgroundColor: 'white',
-    paddingHorizontal: 4,
-    paddingVertical: 1,
-    borderRadius: 3,
-    textAlign: 'center',
-    minWidth: 30,
-  },
-  currentLocation: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    alignItems: 'center',
-  },
-  currentLocationText: {
-    fontSize: 20,
-    marginBottom: 2,
-  },
-  currentLocationLabel: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#FF6B35',
-    backgroundColor: 'white',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 5,
-  },
-  storeList: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  storeListTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
-  },
-  storeItem: {
+  recommendRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    backgroundColor: '#f8f8f8',
-    borderRadius: 10,
-    marginBottom: 10,
   },
-  storeIcon: {
+  recommendImage: {
     width: 40,
-    height: 40,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
+    height: 50,
+    borderRadius: 6,
+    marginRight: 10,
+    backgroundColor: '#eee',
   },
-  storeEmoji: {
-    fontSize: 20,
-  },
-  storeInfo: {
+  recommendInfo: {
     flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
-  storeName: {
+  recommendDesc: {
+    fontSize: 11,
+    color: '#888',
+    marginBottom: 2,
+  },
+  recommendPrice: {
+    fontSize: 13,
+    color: '#222',
+    fontWeight: 'bold',
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  recommendName: {
+    fontSize: 13,
+    color: '#222',
+    marginTop: 16,
+  },
+  kakoButton: {
+    backgroundColor: '#faf0e6',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 60,
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+  kakoButtonText: {
+    color: '#222',
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 2,
+    fontWeight: '500',
   },
-  storeAddress: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 2,
-  },
-  storeDistance: {
-    fontSize: 12,
-    color: '#999',
-  },
-  directionButton: {
-    backgroundColor: '#FF6B35',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-  },
-  directionButtonText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
+  bottomNotice: {
+    fontSize: 11,
+    textAlign: 'center',
+    color: '#888',
+    marginTop: 10,
+    lineHeight: 16,
+    marginBottom: 16,
   },
 });
 

@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   SafeAreaView,
-  ScrollView,
   FlatList,
   TouchableOpacity,
   Dimensions,
@@ -65,16 +64,6 @@ const TrophyScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.trophy}>
-      {/* 헤더 */}
-      <View style={styles.trophy__header}>
-        <TouchableOpacity style={styles.trophy__menuButton}>
-          <View style={styles.trophy__menuLine} />
-          <View style={styles.trophy__menuLine} />
-          <View style={styles.trophy__menuLine} />
-        </TouchableOpacity>
-        <Text style={styles.trophy__headerTitle}>걷기</Text>
-        <View style={styles.trophy__placeholder} />
-      </View>
 
       {/* 트로피 리스트 */}
       <FlatList
@@ -98,45 +87,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
 
-  // Element: trophy__header
-  trophy__header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
 
-  // Element: trophy__menuButton
-  trophy__menuButton: {
-    width: 24,
-    height: 24,
-    justifyContent: 'space-between',
-  },
-
-  // Element: trophy__menuLine
-  trophy__menuLine: {
-    width: 24,
-    height: 3,
-    backgroundColor: '#333',
-    borderRadius: 1.5,
-  },
-
-  // Element: trophy__headerTitle
-  trophy__headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-
-  // Element: trophy__placeholder
-  trophy__placeholder: {
-    width: 24,
-    height: 24,
-  },
 
   // Element: trophy__list
   trophy__list: {

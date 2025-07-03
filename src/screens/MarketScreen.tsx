@@ -8,6 +8,7 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
+import RecommendItem from '../components/RecommendItem';
 
 const MarketScreen = ({ navigation }: any) => {
   const [selectedCategory, setSelectedCategory] = useState('전체상품');
@@ -36,14 +37,6 @@ const MarketScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 헤더 */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.menuButton}>
-          <Text style={styles.menuIcon}>☰</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>shop</Text>
-      </View>
-
       <ScrollView style={styles.contentScroll}>
         {/* 이벤트 배너와 사이드바 섹션 */}
         <View style={styles.topSection}>
@@ -142,27 +135,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  menuButton: {
-    marginRight: 15,
-  },
-  menuIcon: {
-    color: '#333',
-    fontSize: 20,
-  },
-  headerTitle: {
-    color: '#333',
-    fontSize: 24,
-    fontWeight: 'bold',
   },
   contentScroll: {
     flex: 1,
@@ -310,7 +282,7 @@ const styles = StyleSheet.create({
   },
   recommendItem: {
     flexDirection: 'row',
-    backgroundColor: '#f8f8f8',
+    backgroundColor:"#FCFAF6",
     borderRadius: 10,
     padding: 15,
     marginBottom: 20,
@@ -325,6 +297,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   recommendInfo: {
+    borderRadius: 10,
     flex: 1,
   },
   recommendPrice: {

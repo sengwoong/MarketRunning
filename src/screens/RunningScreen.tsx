@@ -6,15 +6,21 @@ import {
   StyleSheet,
   SafeAreaView,
   Image,
+  Alert,
+  TextInput,
 } from 'react-native';
+import GoogleFit, { Scopes } from 'react-native-google-fit';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const RunningScreen = ({ navigation }: any) => {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [distance, setDistance] = useState(0);
+  const [steps, setSteps] = useState(0);
+  const [inputSteps, setInputSteps] = useState('');
 
   useEffect(() => {
-    let interval: number;
+    let interval: any;
     if (isRunning) {
       interval = setInterval(() => {
         setTime(prevTime => prevTime + 1);
@@ -69,6 +75,27 @@ const RunningScreen = ({ navigation }: any) => {
             앞으로 2걸음 더 걸으면 걷기 결과를 받을 수 있습니다!
           </Text>
 
+          {/* 걸음 수 입력 */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+            <TextInput
+              style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 8, width: 100, marginRight: 8 }}
+              placeholder="걸음 수 입력"
+              keyboardType="numeric"
+              value={inputSteps}
+              onChangeText={setInputSteps}
+            />
+            <TouchableOpacity
+              style={{ backgroundColor: '#FF6B35', borderRadius: 8, paddingVertical: 8, paddingHorizontal: 16 }}
+              onPress={() => {
+                const num = parseInt(inputSteps, 10);
+                if (!isNaN(num)) setSteps(num);
+              }}
+            >
+              <Text style={{ color: 'white', fontWeight: 'bold' }}>입력</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={{ marginTop: 8, color: '#333', fontWeight: 'bold' }}>현재 걸음 수: {steps}</Text>
+
           {/* 통계 */}
           <View style={styles.running__stats}>
             <View style={styles.running__statItem}>
@@ -92,9 +119,7 @@ const RunningScreen = ({ navigation }: any) => {
             style={styles.running__actionButton} 
             onPress={handleStartStop}
           >
-      
               <Text style={styles.running__actionIconText}>📅</Text>
-        
             <Text style={styles.running__actionLabel}>
               {isRunning ? '정지' : '시작'}
             </Text>

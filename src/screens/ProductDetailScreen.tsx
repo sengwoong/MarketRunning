@@ -1,265 +1,286 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
-const ProductDetailScreen = ({ navigation, route }: any) => {
-  const { product } = route.params;
-  const [isLiked, setIsLiked] = useState(false);
-  const [inCart, setInCart] = useState(false);
-
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-  };
-
-  const handleAddToCart = () => {
-    setInCart(!inCart);
-    Alert.alert(
-      inCart ? '장바구니에서 제거' : '장바구니에 추가',
-      inCart ? '상품이 장바구니에서 제거되었습니다.' : '상품이 장바구니에 추가되었습니다.'
-    );
-  };
-
-  const handlePurchase = () => {
-    Alert.alert(
-      '구매 완료',
-      `${product.name}을(를) ${product.price}원에 구매했습니다!`,
-      [{ text: '확인', onPress: () => navigation.goBack() }]
-    );
-  };
-
-  const getProductDescription = () => {
-    switch (product.category) {
-      case 'drink':
-        return '운동 후 에너지 보충에 완벽한 음료입니다. 천연 재료로 만들어져 건강에도 좋습니다.';
-      case 'food':
-        return '고품질 영양소가 풍부한 건강식품입니다. 운동 전후 섭취하면 효과적입니다.';
-      case 'gear':
-        return '운동할 때 필수적인 장비입니다. 내구성이 뛰어나고 사용하기 편리합니다.';
-      case 'supplement':
-        return '일일 필수 영양소를 보충해주는 건강보조식품입니다.';
-      default:
-        return '고품질의 우수한 상품입니다.';
-    }
-  };
+export default function ShopScreen() {
+  const [quantity, setQuantity] = useState('1');
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollContainer}>
-        {/* 헤더 */}
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton} 
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.backButtonText}>← 뒤로</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.likeButton} onPress={handleLike}>
-            <Text style={styles.likeButtonText}>
-              {isLiked ? '❤️' : '🤍'}
-            </Text>
-          </TouchableOpacity>
-        </View>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
 
-        {/* 상품 이미지 */}
-        <View style={styles.productImageContainer}>
-          <View style={styles.productImage}>
-            <Text style={styles.productEmoji}>{product.emoji}</Text>
-          </View>
-        </View>
 
-        {/* 상품 정보 */}
-        <View style={styles.productInfo}>
-          <Text style={styles.productName}>{product.name}</Text>
-          <Text style={styles.productPrice}>{product.price.toLocaleString()}원</Text>
-          
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.descriptionTitle}>상품 설명</Text>
-            <Text style={styles.description}>{getProductDescription()}</Text>
-          </View>
 
-          <View style={styles.reviewContainer}>
-            <Text style={styles.reviewTitle}>고객 리뷰</Text>
-            <View style={styles.reviewItem}>
-              <Text style={styles.reviewRating}>⭐⭐⭐⭐⭐</Text>
-              <Text style={styles.reviewText}>"정말 좋은 상품이에요!"</Text>
-              <Text style={styles.reviewAuthor}>- 김운동</Text>
-            </View>
-            <View style={styles.reviewItem}>
-              <Text style={styles.reviewRating}>⭐⭐⭐⭐</Text>
-              <Text style={styles.reviewText}>"가격 대비 만족스럽습니다."</Text>
-              <Text style={styles.reviewAuthor}>- 박헬스</Text>
-            </View>
+      {/* 메인 상품 */}
+      <View style={styles.mainProduct}>
+        {/* 왼쪽: 이미지 */}
+        <Image
+          source={{ uri: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80' }}
+          style={styles.productImage}
+        />
+        {/* 오른쪽: 정보 및 버튼 */}
+        <View style={styles.productInfoColumn}>
+          <Text style={styles.productTitle}>株式会社純電機製作所{ '\n' }ナチュラルシャンプー</Text>
+          <View style={styles.underline} />
+
+          <Text style={styles.price}>2,500円</Text>
+          <View style={styles.productPriceColumn}>
+          <View style={styles.pickerContainerRow}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+          <View style={{
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 5,
+  width: 80,
+  height: 32,
+  overflow: 'hidden',
+  justifyContent: 'center',
+}}>
+  <Picker
+    selectedValue={quantity}
+    onValueChange={(itemValue) => setQuantity(itemValue)}
+    style={{
+      height: 32,
+      fontSize: 14,
+      marginTop: -4,
+    }}
+    dropdownIconColor="#333"
+    mode="dropdown"
+  >
+    <Picker.Item label="1個" value="1" />
+    <Picker.Item label="2個" value="2" />
+  </Picker>
+</View>
+</View>
+
           </View>
-        </View>
+    
+            <TouchableOpacity style={styles.buyButtonRow}>
+              <Text style={styles.buyTextRow}>購入</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cartButtonRow}>
+              <Text style={styles.cartTextRow}>カート</Text>
+            </TouchableOpacity>
+          </View>
+          </View>
+     
+      </View>
+
+      {/* 관련상품 */}
+      <Text style={styles.relatedTitle}>関連商品はいかがですか？</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.relatedScroll} contentContainerStyle={styles.relatedProducts}>
+        <ProductCard name="暁（アカツキ）2本セット" price="2,500円" imageUri="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" />
+        <ProductCard name="暁（アカツキ）歯ブラシセット" price="500円" imageUri="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80" />
+        <ProductCard name="暁（アカツキ）タオル" price="1,500円" imageUri="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80" />
       </ScrollView>
 
-      {/* 하단 액션 버튼들 */}
-      <View style={styles.actionContainer}>
-        <TouchableOpacity 
-          style={[styles.cartButton, inCart && styles.cartButtonActive]} 
-          onPress={handleAddToCart}
-        >
-          <Text style={[styles.actionButtonText, inCart && styles.actionButtonTextActive]}>
-            {inCart ? '장바구니에서 제거' : '장바구니 담기'}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.purchaseButton} onPress={handlePurchase}>
-          <Text style={styles.actionButtonText}>구매하기</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      <Text style={styles.bottomText}>
+        おすすめが気に召しませんでしたか？{ '\n' }ご相談対応も可能です。ぜひお問い合わせください。
+      </Text>
+    </ScrollView>
   );
-};
+}
+
+function ProductCard({ name, price, imageUri }: { name: string; price: string; imageUri: string }) {
+  return (
+    <View style={styles.card}>
+      <Image source={{ uri: imageUri }} style={styles.cardImage} />
+      <Text style={styles.cardName}>{name}</Text>
+      <Text style={styles.cardPrice}>{price}</Text>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#fff',
     flex: 1,
-    backgroundColor: 'white',
   },
-  scrollContainer: {
-    flex: 1,
+  scrollContent: {
+    paddingBottom: 24,
+    minHeight: '100%',
   },
   header: {
+    backgroundColor: '#fff',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingHorizontal: 12,
+    paddingTop: 18,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
-  backButton: {
-    padding: 5,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  likeButton: {
-    padding: 5,
-  },
-  likeButtonText: {
+  menu: {
+    color: '#222',
     fontSize: 24,
+    fontWeight: 'bold',
   },
-  productImageContainer: {
-    alignItems: 'center',
-    paddingVertical: 30,
-    backgroundColor: '#f8f8f8',
+  headerText: {
+    color: '#222',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  mainProduct: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    paddingTop: 18,
+    paddingBottom: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
+    gap: 24,
   },
   productImage: {
-    width: 150,
-    height: 150,
-    backgroundColor: 'white',
-    borderRadius: 75,
+    width: 180,
+    height: 270,
+    borderRadius: 12,
+    marginRight: 0,
+    resizeMode: 'cover',
+    backgroundColor: '#eee',
+  },
+  productPriceColumn:{
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'space-between',
+    gap: 8,
+    marginTop: 4,
+  },
+  productInfoColumn: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: 8,
+    marginLeft: 12,
+    marginTop: 2,
+  },
+  productTitle: {
+    fontSize: 15,
+    textAlign: 'left',
+    marginBottom: 2,
+    color: '#222',
+    fontWeight: '400',
+    lineHeight: 20,
+  },
+  price: {
+    fontSize: 24,
+    marginBottom: 4,
+    color: 'black',
+    textAlign: 'left',
+  },
+  pickerContainerRow: {
+    width: 90,
+    height: 36,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    backgroundColor: '#fafafa',
+    overflow: 'hidden',
+    marginRight: 0,
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  pickerRowStyle: {
+    width: 100,
+    height: 22,
+    borderRadius: 9999,
+    backgroundColor: '#fafafa',
+    paddingHorizontal: 18,
+    color: '#222',
+    fontSize: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+    textAlign: 'center',
   },
-  productEmoji: {
-    fontSize: 80,
-  },
-  productInfo: {
-    padding: 20,
-  },
-  productName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
-  },
-  productPrice: {
-    fontSize: 20,
-    color: '#FF6B35',
-    fontWeight: 'bold',
-    marginBottom: 30,
-  },
-  descriptionContainer: {
-    marginBottom: 30,
-  },
-  descriptionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: '#666',
-    lineHeight: 24,
-  },
-  reviewContainer: {
-    marginBottom: 20,
-  },
-  reviewTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
-  },
-  reviewItem: {
-    backgroundColor: '#f8f8f8',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  reviewRating: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  reviewText: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 5,
-  },
-  reviewAuthor: {
-    fontSize: 12,
-    color: '#999',
-  },
-  actionContainer: {
+  buttonRow: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    gap: 10,
-  },
-  cartButton: {
-    flex: 1,
-    backgroundColor: '#ddd',
-    paddingVertical: 15,
-    borderRadius: 10,
     alignItems: 'center',
+    gap: 8,
+    marginTop: 4,
   },
-  cartButtonActive: {
-    backgroundColor: '#FF6B35',
-  },
-  purchaseButton: {
-    flex: 1,
-    backgroundColor: '#FF6B35',
-    paddingVertical: 15,
-    borderRadius: 10,
+  buyButtonRow: {
+    backgroundColor: '#F08359',
+    width: 100,
+    height: 22,
+    borderRadius: 100,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  actionButtonText: {
-    color: '#333',
-    fontSize: 16,
+  buyTextRow: {
+    color: '#fff',
     fontWeight: 'bold',
+    fontSize: 15,
   },
-  actionButtonTextActive: {
-    color: 'white',
+  cartButtonRow: {
+    backgroundColor: '#FED950',
+    width: 100,
+    height: 22,
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cartTextRow: {
+    color: '#333',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  relatedTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 16,
+    marginTop: 24,
+    marginBottom: 10,
+    color: '#222',
+  },
+  relatedScroll: {
+    marginBottom: 0,
+  },
+  relatedProducts: {
+    flexDirection: 'row',
+    gap: 12,
+    paddingHorizontal: 10,
+  },
+  card: {
+    width: 110,
+    alignItems: 'center',
+    marginRight: 10,
+    backgroundColor: '#fff',
+  },
+  cardImage: {
+    width: 80,
+    height: 100,
+    borderRadius: 8,
+    backgroundColor: '#eee',
+    marginBottom: 6,
+    resizeMode: 'cover',
+  },
+  cardName: {
+    fontSize: 11,
+    textAlign: 'center',
+    marginBottom: 4,
+    color: '#222',
+    lineHeight: 15,
+  },
+  cardPrice: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#222',
+    textAlign: 'center',
+  },
+  bottomText: {
+    fontSize: 11,
+    textAlign: 'center',
+    marginTop: 32,
+    color: '#888',
+    marginBottom: 16,
+    lineHeight: 16,
+  },
+  underline: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#ccc',
+    marginVertical: 6,
+    borderRadius: 1,
   },
 });
-
-export default ProductDetailScreen; 

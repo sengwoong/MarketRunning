@@ -5,7 +5,9 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  ScrollView,
 } from 'react-native';
+import RecommendItem from '../components/RecommendItem';
 
 const RunningCompleteScreen = ({ navigation, route }: any) => {
   const { time, points } = route.params || { time: 0, points: 0 };
@@ -16,6 +18,13 @@ const RunningCompleteScreen = ({ navigation, route }: any) => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const getCurrentDate = () => {
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+    return `${month}월 ${day}일`;
+  };
+
   const goToTrophy = () => {
     navigation.navigate('Trophy');
   };
@@ -24,186 +33,217 @@ const RunningCompleteScreen = ({ navigation, route }: any) => {
     navigation.navigate('Running');
   };
 
-  const goToAchievement = () => {
-    navigation.navigate('Trophy'); // 목표달성율 페이지로 이동 (Trophy 페이지 활용)
+  const goToMarket = () => {
+    navigation.navigate('Market');
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        {/* 완료 메시지 */}
-        <Text style={styles.completeText}>달리기 완료!</Text>
-
-        {/* 캐릭터 */}
-        <View style={styles.characterContainer}>
-          <View style={styles.character}>
-            <View style={styles.characterHead}>
-              <View style={styles.characterFace}>
-                <View style={styles.eye} />
-                <View style={styles.eye} />
-                <View style={styles.happyMouth} />
-              </View>
-            </View>
-            <View style={styles.characterBody} />
-            <View style={styles.limbs}>
-              <View style={styles.armRaised} />
-              <View style={styles.armRaised} />
-              <View style={styles.leg} />
-              <View style={styles.leg} />
-            </View>
-          </View>
+    <SafeAreaView style={styles.complete}>
+      <ScrollView 
+        style={styles.complete__content}
+        contentContainerStyle={styles.complete__scrollContent}
+      >
+        {/* 캐릭터 영역 - 사용자가 직접 그릴 예정 */}
+        <View style={styles.complete__character}>
+          <Text style={styles.complete__characterPlaceholder}>
+            보람을 채워봤습니다
+          </Text>
         </View>
 
-        {/* 달성 정보 - 클릭 가능 */}
-        <TouchableOpacity style={styles.achievementContainer} onPress={goToAchievement}>
-          <Text style={styles.timeText}>운동 시간: {formatTime(time)}</Text>
-          <Text style={styles.pointsText}>{points}점수</Text>
-          <Text style={styles.achievementText}>목표달성율 보기 👆</Text>
-        </TouchableOpacity>
-
-        {/* 버튼들 */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.trophyButton} onPress={goToTrophy}>
-            <Text style={styles.buttonText}>트로피 보기</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.againButton} onPress={goToRunning}>
-            <Text style={styles.buttonText}>다시 달리기</Text>
-          </TouchableOpacity>
+        {/* 보상 획득 메시지 */}
+        <View style={styles.complete__rewardContainer}>
+          <Text style={styles.complete__rewardText}>報酬を獲得しました</Text>
+          <Text style={styles.complete__successText}>300成功</Text>
         </View>
-      </View>
+
+        {/* 상단 컨텐츠 끝 */}
+        <View style={styles.complete__topContent} />
+
+        {/* 추천 상품 섹션 - 맨 아래 고정 */}
+        <View style={styles.complete__bottomSection}>
+          <RecommendItem
+            title="株式会社新電機製作所 ナチュラルシャンプー"
+            description="こういう商品をどうですか？"
+            price="2,500円"
+            onPress={() => {
+              navigation.navigate('ProductDetail', { 
+                product: { 
+                  name: '株式会社新電機製作所 ナチュラルシャンプー', 
+                  price: 2500 
+                } 
+              });
+            }}
+          />
+
+
+        {/* 추천 상품 섹션 - 맨 아래 고정 */}
+
+          <RecommendItem
+            title="株式会社新電機製作所 ナチュラルシャンプー"
+            description="こういう商品をどうですか？"
+            price="2,500円"
+            onPress={() => {
+              navigation.navigate('ProductDetail', { 
+                product: { 
+                  name: '株式会社新電機製作所 ナチュラルシャンプー', 
+                  price: 2500 
+                } 
+              });
+            }}
+          />
+
+          <Text style={styles.complete__question}>
+            おすすめがお気に召しませんでしたか？
+            ご希望の商品があれば、ぜひ教えてください。
+          </Text>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  // Block: complete
+  complete: {
     flex: 1,
-    backgroundColor: '#87CEEB',
+    backgroundColor: '#ffffff',
   },
-  content: {
+
+  // Element: complete__content
+  complete__content: {
     flex: 1,
-    alignItems: 'center',
+  },
+
+  // Element: complete__scrollContent
+  complete__scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
+  },
+
+  // Element: complete__character
+  complete__character: {
+    backgroundColor: '#FCFAF6',
+    width: '100%',
+    height: 393,
+    marginBottom: 30,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  // Element: complete__characterPlaceholder
+  complete__characterPlaceholder: {
+    fontSize: 18,
+    color: '#666',
+    textAlign: 'center',
+  },
+
+  // Element: complete__rewardContainer
+  complete__rewardContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: 30,
     paddingHorizontal: 20,
   },
-  completeText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 40,
-  },
-  characterContainer: {
-    marginBottom: 40,
-  },
-  character: {
-    alignItems: 'center',
-  },
-  characterHead: {
-    width: 80,
-    height: 80,
-    backgroundColor: '#FFE4B5',
-    borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  characterFace: {
-    alignItems: 'center',
-  },
-  eye: {
-    width: 10,
-    height: 10,
+
+  // Element: complete__rewardBox
+  complete__rewardBox: {
     backgroundColor: '#000',
-    borderRadius: 5,
-    marginHorizontal: 5,
-    marginBottom: 5,
-  },
-  happyMouth: {
-    width: 20,
-    height: 10,
-    backgroundColor: '#000',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
     borderRadius: 10,
-    marginTop: 5,
-  },
-  characterBody: {
-    width: 50,
-    height: 60,
-    backgroundColor: '#4169E1',
-    borderRadius: 25,
     marginBottom: 15,
   },
-  limbs: {
-    flexDirection: 'row',
-    position: 'relative',
-    justifyContent: 'center',
+
+  // Element: complete__rewardText
+  complete__rewardText: {
+    color: '#000',
+    fontSize: 20,
+    fontWeight: '500',
+    textAlign: 'center',
   },
-  armRaised: {
-    width: 18,
-    height: 35,
-    backgroundColor: '#FFE4B5',
-    borderRadius: 9,
-    marginHorizontal: 10,
-    position: 'absolute',
-    top: -50,
-    transform: [{ rotate: '-45deg' }],
+
+  // Element: complete__successText
+  complete__successText: {
+    fontSize: 20,
+    color: '#000',
+    textAlign: 'center',
   },
-  leg: {
-    width: 18,
-    height: 40,
-    backgroundColor: '#4169E1',
-    borderRadius: 9,
-    marginHorizontal: 8,
-  },
-  achievementContainer: {
+
+  // Element: complete__info
+  complete__info: {
     alignItems: 'center',
-    marginBottom: 40,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    padding: 20,
-    borderRadius: 15,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.3)',
+    marginBottom: 30,
+    paddingHorizontal: 20,
   },
-  timeText: {
-    fontSize: 18,
-    color: 'white',
+
+  // Element: complete__infoDesc
+  complete__infoDesc: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 20,
+    
+  },
+
+  // Element: complete__topContent
+  complete__topContent: {
+    flex: 1,
+
+  },
+
+  // Element: complete__bottomSection
+  complete__bottomSection: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+
+  // Element: complete__recommendSection
+  complete__recommendSection: {
+    marginHorizontal: 20,
+    marginBottom: 30,
+  },
+
+  // Element: complete__question
+  complete__question: {
+    color: '#000',
+    fontSize: 12,
+    textAlign: 'center',
     marginBottom: 10,
   },
-  pointsText: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#FFD700',
-    marginBottom: 8,
+
+  // Element: complete__actions
+  complete__actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    height: 120,
   },
-  achievementText: {
+
+  // Element: complete__actionButton
+  complete__actionButton: {
+    alignItems: 'center',
+    flex: 1,
+    backgroundColor: 'black',
+    gap: 8,
+    paddingVertical: 20,
+  },
+
+  // Element: complete__actionIconText
+  complete__actionIconText: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    textAlign: 'center',
+    fontSize: 24,
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    marginBottom: 10,
+  },
+
+  // Element: complete__actionLabel
+  complete__actionLabel: {
     fontSize: 14,
     color: 'white',
-    opacity: 0.8,
-    fontStyle: 'italic',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 20,
-  },
-  trophyButton: {
-    backgroundColor: '#FFD700',
-    paddingHorizontal: 25,
-    paddingVertical: 15,
-    borderRadius: 25,
-    minWidth: 120,
-    alignItems: 'center',
-  },
-  againButton: {
-    backgroundColor: '#32CD32',
-    paddingHorizontal: 25,
-    paddingVertical: 15,
-    borderRadius: 25,
-    minWidth: 120,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
+    textAlign: 'center',
     fontWeight: 'bold',
   },
 });
