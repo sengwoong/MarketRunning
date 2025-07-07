@@ -6,6 +6,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Image,
 } from 'react-native';
 import RecommendItem from '../components/RecommendItem';
 
@@ -43,11 +44,13 @@ const RunningCompleteScreen = ({ navigation, route }: any) => {
         style={styles.complete__content}
         contentContainerStyle={styles.complete__scrollContent}
       >
+  
         {/* 캐릭터 영역 - 사용자가 직접 그릴 예정 */}
         <View style={styles.complete__character}>
-          <Text style={styles.complete__characterPlaceholder}>
-            보람을 채워봤습니다
-          </Text>
+        <Image 
+          source={require('../../img/오늘걷기성공.png')}
+          style={styles.image}
+        />
         </View>
 
         {/* 보상 획득 메시지 */}
@@ -65,6 +68,7 @@ const RunningCompleteScreen = ({ navigation, route }: any) => {
             title="株式会社新電機製作所 ナチュラルシャンプー"
             description="こういう商品をどうですか？"
             price="2,500円"
+            imageUrl="https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80"
             onPress={() => {
               navigation.navigate('ProductDetail', { 
                 product: { 
@@ -75,18 +79,16 @@ const RunningCompleteScreen = ({ navigation, route }: any) => {
             }}
           />
 
-
-        {/* 추천 상품 섹션 - 맨 아래 고정 */}
-
           <RecommendItem
-            title="株式会社新電機製作所 ナチュラルシャンプー"
-            description="こういう商品をどうですか？"
-            price="2,500円"
+            title="天然水 500mL"
+            description="運動後の水分補給に最適な天然水です"
+            price="180円"
+            imageUrl="https://images.unsplash.com/photo-1560847468-5eef330f455a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80"
             onPress={() => {
               navigation.navigate('ProductDetail', { 
                 product: { 
-                  name: '株式会社新電機製作所 ナチュラルシャンプー', 
-                  price: 2500 
+                  name: '天然水 500mL', 
+                  price: 180 
                 } 
               });
             }}
@@ -245,6 +247,13 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+
+  image: {
+    width: "100%",
+    height: "100%",
+    resizeMode: 'cover',
+    marginBottom: 20,
   },
 });
 

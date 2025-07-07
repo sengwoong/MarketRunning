@@ -11,6 +11,9 @@ import {
   DrawerContentComponentProps,
 } from '@react-navigation/drawer';
 
+// Utils
+import { formatPoints } from '../utils/formatters';
+
 // Context
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
@@ -24,22 +27,23 @@ import MarketScreen from '../screens/MarketScreen';
 import ProductDetailScreen from '../screens/ProductDetailScreen';
 import StoreMapScreen from '../screens/StoreMapScreen';
 import CartScreen from '../screens/CartScreen';
+import CategoryDetailScreen from '../screens/CategoryDetailScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
-// 커스텀 Drawer Content
+// カスタム Drawer Content
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   const { user, logout } = useAuth();
 
   const handleLogout = () => {
     Alert.alert(
-      '로그아웃',
-      '정말 로그아웃하시겠습니까?',
+      'ログアウト',
+      '本当にログアウトしますか？',
       [
-        { text: '취소', style: 'cancel' },
+        { text: 'キャンセル', style: 'cancel' },
         { 
-          text: '로그아웃', 
+          text: 'ログアウト', 
           style: 'destructive',
           onPress: async () => {
             await logout();
@@ -51,37 +55,37 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 
   return (
     <DrawerContentScrollView {...props}>
-      {/* 드로어 헤더 */}
+      {/* ドロワーヘッダー */}
       <View style={styles.drawerHeader}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoText}>M</Text>
         </View>
         <Text style={styles.appTitle}>MarketRunning</Text>
-        <Text style={styles.appSubtitle}>걷기와 쇼핑의 만남</Text>
+        <Text style={styles.appSubtitle}>ウォーキングとショッピングの出会い</Text>
         
-        {/* 사용자 정보 */}
+        {/* ユーザー情報 */}
         {user && (
           <View style={styles.userInfo}>
-            <Text style={styles.username}>{user.username}님</Text>
-            <Text style={styles.userPoints}>{user.point.toLocaleString()}P</Text>
+            <Text style={styles.username}>{user.username}様</Text>
+            <Text style={styles.userPoints}>{formatPoints(user.points)}</Text>
           </View>
         )}
       </View>
       
-      {/* 기본 드로어 아이템들 */}
+      {/* 基本ドロワーアイテム */}
       <DrawerItemList {...props} />
       
-      {/* 로그아웃 버튼 */}
+      {/* ログアウトボタン */}
       <View style={styles.logoutContainer}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>🚪 로그아웃</Text>
+          <Text style={styles.logoutText}>🚪 ログアウト</Text>
         </TouchableOpacity>
       </View>
     </DrawerContentScrollView>
   );
 };
 
-// 인증되지 않은 사용자용 네비게이터
+// 未認証ユーザー用ナビゲーター
 const AuthNavigator = () => {
   return (
     <Stack.Navigator
@@ -101,7 +105,7 @@ const AuthNavigator = () => {
         name="Login" 
         component={LoginScreen}
         options={{
-          title: '로그인',
+          title: 'ログイン',
           headerShown: false,
         }}
       />
@@ -109,7 +113,7 @@ const AuthNavigator = () => {
         name="Register" 
         component={RegisterScreen}
         options={{
-          title: '회원가입',
+          title: '新規登録',
           headerShown: true,
         }}
       />
@@ -117,7 +121,7 @@ const AuthNavigator = () => {
   );
 };
 
-// 인증된 사용자용 메인 네비게이터
+// 認証済みユーザー用メインナビゲーター
 const MainNavigator = () => {
   return (
     <Drawer.Navigator
@@ -155,8 +159,8 @@ const MainNavigator = () => {
         name="Running" 
         component={RunningScreen}
         options={{
-          title: '달리기',
-          headerTitle: '달리기',
+          title: 'ラン',
+          headerTitle: 'ラン',
           drawerIcon: ({ color, size }) => (
             <Text style={{ fontSize: size, color }}>🏃</Text>
           ),
@@ -167,8 +171,8 @@ const MainNavigator = () => {
         name="Trophy" 
         component={TrophyScreen}
         options={{
-          title: '트로피',
-          headerTitle: '트로피',
+          title: 'トロフィー',
+          headerTitle: 'トロフィー',
           drawerIcon: ({ color, size }) => (
             <Text style={{ fontSize: size, color }}>🏆</Text>
           ),
@@ -179,8 +183,8 @@ const MainNavigator = () => {
         name="Market" 
         component={MarketScreen}
         options={{
-          title: '마켓',
-          headerTitle: 'shop',
+          title: 'マーケット',
+          headerTitle: 'ショップ',
           headerShown: true,
           drawerIcon: ({ color, size }) => (
             <Text style={{ fontSize: size, color }}>🛒</Text>
@@ -192,30 +196,29 @@ const MainNavigator = () => {
         name="Cart" 
         component={CartScreen}
         options={{
-          title: '장바구니',
-          headerTitle: '장바구니',
+          title: 'カート',
+          headerTitle: 'カート',
           drawerIcon: ({ color, size }) => (
             <Text style={{ fontSize: size, color }}>🛍️</Text>
           ),
         }}
       />
 
-      {/* 추가 화면들을 Drawer에 직접 포함 */}
       <Drawer.Screen 
         name="RunningComplete" 
         component={RunningCompleteScreen}
         options={{
-          title: '달리기 완료',
-          drawerItemStyle: { display: 'none' }, // 드로어에서 숨김
+          title: 'ラン完了',
+          drawerItemStyle: { display: 'none' },
         }}
       />
       
       <Drawer.Screen 
         name="ProductDetail" 
-        component={ProductDetailScreen}
+        component={ProductDetailScreen as unknown as React.ComponentType<any>}
         options={{
-          title: '상품 상세',
-          drawerItemStyle: { display: 'none' }, // 드로어에서 숨김
+          title: '商品詳細',
+          drawerItemStyle: { display: 'none' },
         }}
       />
       
@@ -223,25 +226,34 @@ const MainNavigator = () => {
         name="StoreMap" 
         component={StoreMapScreen}
         options={{
-          title: '매장 지도',
-          drawerItemStyle: { display: 'none' }, // 드로어에서 숨김
+          title: '店舗マップ',
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+
+      <Drawer.Screen 
+        name="CategoryDetail" 
+        component={CategoryDetailScreen as unknown as React.ComponentType<any>}
+        options={{
+          title: 'カテゴリ',
+          drawerItemStyle: { display: 'none' },
         }}
       />
     </Drawer.Navigator>
   );
 };
 
-// 로딩 스크린
+// ローディング画面
 const LoadingScreen = () => {
   return (
     <View style={styles.loadingContainer}>
       <ActivityIndicator size="large" color="#FF6B35" />
-      <Text style={styles.loadingText}>로딩중...</Text>
+      <Text style={styles.loadingText}>読み込み中...</Text>
     </View>
   );
 };
 
-// 내부 AppNavigator (인증 상태 체크)
+// 内部 AppNavigator (認証状態チェック)
 const AppNavigatorInner = () => {
   const { isAuthenticated, loading } = useAuth();
 
@@ -256,7 +268,7 @@ const AppNavigatorInner = () => {
   );
 };
 
-// 메인 앱 네비게이터 (AuthProvider 포함)
+// メイン アプリ ナビゲーター (AuthProvider 含む)
 const AppNavigator = () => {
   return (
     <SafeAreaProvider>

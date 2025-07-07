@@ -16,6 +16,7 @@ import {
 import { CartSummary, CartItem } from '../types/api';
 import { cartService, shopService } from '../services';
 import { useAuth } from '../context/AuthContext';
+import { formatPoints, formatNumber } from '../utils/formatters';
 
 const { width } = Dimensions.get('window');
 
@@ -176,14 +177,14 @@ const CartScreen: React.FC = () => {
 
     const finalAmount = cart.total_points - discountAmount;
     
-    if (!user || user.point < finalAmount) {
+    if (!user || user.points < finalAmount) {
       Alert.alert('포인트 부족', '보유 포인트가 부족합니다.');
       return;
     }
 
     Alert.alert(
       '구매 확인',
-      `총 ${finalAmount.toLocaleString()}P로 구매하시겠습니까?`,
+      `총 ${formatNumber(finalAmount)}P로 구매하시겠습니까?`,
       [
         { text: '취소', style: 'cancel' },
         {
@@ -267,7 +268,7 @@ const CartScreen: React.FC = () => {
       
       <View style={styles.itemActions}>
         <Text style={styles.itemTotal}>
-          {(item.item.point_price * item.quantity).toLocaleString()}P
+          {formatPoints(item.item.point_price * item.quantity)}
         </Text>
         <TouchableOpacity
           style={styles.removeButton}
@@ -371,25 +372,25 @@ const CartScreen: React.FC = () => {
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>상품 금액:</Text>
-                <Text style={styles.summaryValue}>{cart.total_points.toLocaleString()}P</Text>
+                <Text style={styles.summaryValue}>{formatPoints(cart.total_points)}</Text>
               </View>
               {appliedCoupon && (
                 <View style={styles.summaryRow}>
                   <Text style={styles.discountLabel}>쿠폰 할인:</Text>
-                  <Text style={styles.discountValue}>-{discountAmount.toLocaleString()}P</Text>
+                  <Text style={styles.discountValue}>-{formatPoints(discountAmount)}</Text>
                 </View>
               )}
               <View style={[styles.summaryRow, styles.totalRow]}>
                 <Text style={styles.totalLabel}>최종 결제 금액:</Text>
                 <Text style={styles.summaryTotal}>
-                  {(cart.total_points - discountAmount).toLocaleString()}P
+                  {formatPoints(cart.total_points - discountAmount)}
                 </Text>
               </View>
             </View>
             
             <View style={styles.userPointsContainer}>
               <Text style={styles.userPointsLabel}>내 포인트:</Text>
-              <Text style={styles.userPoints}>{user?.point?.toLocaleString() || '0'}P</Text>
+              <Text style={styles.userPoints}>{formatPoints(user?.points || 0)}</Text>
             </View>
 
             {/* 구매 버튼 */}
@@ -405,7 +406,7 @@ const CartScreen: React.FC = () => {
                 <ActivityIndicator color="white" />
               ) : (
                 <Text style={styles.purchaseButtonText}>
-                  {(cart.total_points - discountAmount).toLocaleString()}P 구매하기
+                  {formatPoints(cart.total_points - discountAmount)} 구매하기
                 </Text>
               )}
             </TouchableOpacity>

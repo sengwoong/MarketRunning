@@ -4,12 +4,14 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 
 interface RecommendItemProps {
   title: string;
   description: string;
   price: string;
+  imageUrl?: string;
   onPress?: () => void;
 }
 
@@ -17,13 +19,21 @@ const RecommendItem: React.FC<RecommendItemProps> = ({
   title,
   description,
   price,
+  imageUrl,
   onPress
 }) => {
   return (
     <TouchableOpacity style={styles.recommendItem} onPress={onPress}>
-      <View style={styles.recommendImagePlaceholder}>
-        <Text style={styles.imagePlaceholder}></Text>
-      </View>
+      {imageUrl ? (
+        <Image 
+          source={{ uri: imageUrl }}
+          style={styles.recommendImage}
+        />
+      ) : (
+        <View style={styles.recommendImagePlaceholder}>
+          <Text style={styles.imagePlaceholder}>No Image</Text>
+        </View>
+      )}
       <View style={styles.recommendInfo}>
         <View style={styles.recommendInfoText}>
           <Text style={styles.recommendDescription}>{description}</Text>
@@ -52,10 +62,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 15,
   },
+  recommendImage: {
+    width: 60,
+    height: 95,
+    borderRadius: 8,
+    marginRight: 15,
+  },
   imagePlaceholder: {
-    height: 141, 
-    width: 92,
-    fontSize: 14,
+    color: '#999',
+    fontSize: 12,
   },
   recommendInfo: {
     flex: 1,

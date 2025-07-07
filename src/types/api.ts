@@ -20,17 +20,21 @@ export interface LoginResponse {
 export interface RegisterRequest {
   username: string;
   password: string;
+  email?: string;
   gender?: string;
   birth_year?: number;
+  region?: string;
 }
 
-// 사용자 타입
+// 사용자 타입 - 백엔드 스키마와 일치하도록 수정
 export interface User {
   id: number;
   username: string;
+  email?: string;
   gender?: string;
   birth_year?: number;
-  point: number;
+  points: number;  // point -> points로 수정
+  region?: string;
   created_at: string;
   updated_at?: string;
 }
@@ -71,6 +75,9 @@ export interface Item {
   longitude?: number;
   created_at: string;
   updated_at?: string;
+  // 日本語カテゴリー用フィールド
+  main_category?: string; // 例: "ファッション", "食品" など
+  sub_category?: string;  // 例: "衣類", "飲料" など
 }
 
 // 트로피 타입
@@ -87,12 +94,12 @@ export interface Trophy {
 export interface UserTrophy {
   id: number;
   title: string;
-  description?: string;
+  description: string;
   completed: boolean;
   progress: number;
   target: number;
-  icon_url?: string;
-  completed_at?: string;
+  icon_url: string | null;
+  completed_at: string | null;
 }
 
 // 구매 타입

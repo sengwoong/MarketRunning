@@ -12,45 +12,49 @@ import {
 } from 'react-native';
 import RecommendItem from '../components/RecommendItem';
 import { shopService, Item } from '../services';
+import { formatPoints } from '../utils/formatters';
 
 const MarketScreen = ({ navigation }: any) => {
-  const [selectedCategory, setSelectedCategory] = useState('전체상품');
+  const [selectedCategory, setSelectedCategory] = useState('全商品');
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
   const categories = [
-    '전체상품',
-    '식품',
-    '기프트',
-    '생활용품',
+    '全商品',
+    '食品',
+    'ギフト',
+    '生活用品',
     'コスメ',
     'ファッション',
     '雑貨グッズ',
-    '新착商품',
-    'ぶくの자동판매기'
+    '新着商品',
+    '自動販売機'
   ];
 
   // 컴포넌트 마운트 시 상품 데이터 로드
   useEffect(() => {
     loadItems();
-  }, []);
+  }, [selectedCategory]);
 
   const loadItems = async () => {
     try {
       setLoading(true);
-      const itemsData = await shopService.getItems();
-      setItems(itemsData);
+      // 카테고리별 검색으로 변경
+      const itemsData = await shopService.getItemsByCategory(selectedCategory === '全商品' ? '' : selectedCategory);
+      if (Array.isArray(itemsData)) {
+        setItems(itemsData);
+      } else {
+        console.error('API 응답 형식 오류:', itemsData);
+        setItems([]);
+      }
     } catch (error: any) {
-      Alert.alert('오류', error.message || '상품을 불러오는데 실패했습니다.');
+      console.error('商品読み込み失敗:', error?.response?.data || error.message);
+      Alert.alert('エラー', '商品を読み込めませんでした。しばらくしてからもう一度お試しください。');
+      setItems([]);
     } finally {
       setLoading(false);
     }
   };
-
-  // 카테고리에 따른 상품 필터링
-  const filteredItems = selectedCategory === '전체상품' 
-    ? items 
-    : items.filter(item => item.category === selectedCategory);
 
   const goToProductDetail = (product: Item) => {
     navigation.navigate('ProductDetail', { product });
@@ -95,7 +99,7 @@ const MarketScreen = ({ navigation }: any) => {
             
             {/* 이곳에 사진을 넣으실 수 있습니다 */}
             <View style={styles.bannerImagePlaceholder}>
-              <Text style={styles.placeholderText}>여기에 사진을 넣어주세요</Text>
+          
             </View>
           </View>
         </View>
@@ -111,7 +115,7 @@ const MarketScreen = ({ navigation }: any) => {
             </View>
           ) : (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.productHorizontalList}>
-              {filteredItems.slice(0, 5).map((product) => (
+              {items.slice(0, 5).map((product) => (
                 <TouchableOpacity 
                   key={product.id}
                   style={styles.productCard}
@@ -129,7 +133,7 @@ const MarketScreen = ({ navigation }: any) => {
                   <View style={styles.productInfo}>
                     <Text style={styles.productBrand}>상품</Text>
                     <Text style={styles.productName} numberOfLines={2}>{product.name}</Text>
-                    <Text style={styles.productPrice}>{product.point_price.toLocaleString()}P</Text>
+                    <Text style={styles.productPrice}>{formatPoints(product.point_price)}</Text>
                   </View>
                 </TouchableOpacity>
               ))}

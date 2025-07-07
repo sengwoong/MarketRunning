@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { shopService, cartService, Item } from '../services';
+import { formatPoints } from '../utils/formatters';
 
 interface ProductDetailScreenProps {
   navigation: any;
@@ -200,7 +201,7 @@ export default function ProductDetailScreen({ navigation, route }: ProductDetail
             <Text style={styles.description}>{product.description}</Text>
           )}
 
-          <Text style={styles.price}>{product.point_price.toLocaleString()}P</Text>
+          <Text style={styles.price}>{formatPoints(product.point_price)}</Text>
           
           <View style={styles.productPriceColumn}>
             <View style={styles.pickerContainerRow}>
@@ -305,7 +306,7 @@ function ProductCard({ product, onPress }: { product: Item; onPress: () => void 
         </View>
       )}
       <Text style={styles.cardName} numberOfLines={2}>{product.name}</Text>
-      <Text style={styles.cardPrice}>{product.point_price.toLocaleString()}P</Text>
+      <Text style={styles.cardPrice}>{formatPoints(product.point_price)}</Text>
     </TouchableOpacity>
   );
 }

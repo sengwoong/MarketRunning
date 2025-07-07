@@ -34,7 +34,7 @@ const RunningScreen = ({ navigation }: any) => {
     const today = new Date();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    return `${month}월 ${day}일`;
+    return `${month}月 ${day}日`;
   };
 
   const handleStartStop = () => {
@@ -52,10 +52,16 @@ const RunningScreen = ({ navigation }: any) => {
   return (
     <SafeAreaView style={styles.running}>
       <View style={styles.running__content}>
-        {/* 캐릭터 영역 */}
-        <View style={styles.running__character} />
 
-        {/* 날짜 */}
+        {/* キャラクター領域 */}
+        <View style={styles.running__character} >
+        <Image 
+          source={require('../../img/오늘걷기중.png')}
+          style={styles.image}
+        />
+        </View>
+
+        {/* 日付 */}
         <View style={styles.running__date}>
           <Text style={styles.running__dateText}>
             {getCurrentDate().split(' ')[0]}
@@ -65,72 +71,65 @@ const RunningScreen = ({ navigation }: any) => {
           </Text>
         </View>
 
-        {/* 거리 정보 박스 */}
+        {/* 距離情報ボックス */}
         <View style={styles.running__info}>
           <Text style={styles.running__infoTitle}>
-            {distance.toFixed(1)}km 걸었습니다.
+            {distance.toFixed(1)}km 歩きました
           </Text>
 
           <Text style={styles.running__infoDesc}>
-            앞으로 2걸음 더 걸으면 걷기 결과를 받을 수 있습니다!
+            あと2歩で歩行結果を受け取れます！
           </Text>
 
-          {/* 걸음 수 입력 */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
-            <TextInput
-              style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 8, width: 100, marginRight: 8 }}
-              placeholder="걸음 수 입력"
-              keyboardType="numeric"
-              value={inputSteps}
-              onChangeText={setInputSteps}
-            />
-            <TouchableOpacity
-              style={{ backgroundColor: '#FF6B35', borderRadius: 8, paddingVertical: 8, paddingHorizontal: 16 }}
-              onPress={() => {
-                const num = parseInt(inputSteps, 10);
-                if (!isNaN(num)) setSteps(num);
-              }}
-            >
-              <Text style={{ color: 'white', fontWeight: 'bold' }}>입력</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={{ marginTop: 8, color: '#333', fontWeight: 'bold' }}>현재 걸음 수: {steps}</Text>
+          {/* 歩数 */}
+          <Text style={{ marginTop: 8, color: '#333', fontWeight: 'bold' }}>
+            現在の歩数: {steps}
+          </Text>
 
-          {/* 통계 */}
+          {/* 統計 */}
           <View style={styles.running__stats}>
             <View style={styles.running__statItem}>
               <View style={styles.running__statContent}>
-                <Text style={styles.running__statNumber}>30일</Text>
-                <Text style={styles.running__statLabel}>연속달성</Text>
+                <Text style={styles.running__statNumber}>30日</Text>
+                <Text style={styles.running__statLabel}>連続達成</Text>
               </View>
             </View>
             <View style={styles.running__statItem}>
               <View style={styles.running__statContent}>
                 <Text style={styles.running__statNumber}>80%</Text>
-                <Text style={styles.running__statLabel}>목표달성률</Text>
+                <Text style={styles.running__statLabel}>目標達成率</Text>
               </View>
             </View>
           </View>
         </View>
 
-        {/* 하단 버튼들 */}
+        {/* 下部アイコン */}
         <View style={styles.running__actions}>
-          <TouchableOpacity 
-            style={styles.running__actionButton} 
-            onPress={handleStartStop}
-          >
-              <Text style={styles.running__actionIconText}>📅</Text>
-            <Text style={styles.running__actionLabel}>
-              {isRunning ? '정지' : '시작'}
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.achievementItem}>
+            <View style={styles.iconCircle}>
+              <Image 
+                source={require('../../img/3일연속걷기성공.png')}
+                style={styles.iconImage}
+              />
+            </View>
+            <Text style={styles.achievementText}>七日中三日</Text>
+          </View>
 
           <TouchableOpacity 
-            style={styles.running__actionButton} 
-            onPress={handleComplete}
+            style={styles.achievementItem}
+            onPress={() => navigation.navigate('RunningComplete', { 
+              time, 
+              points: Math.floor(time / 6) * 10,
+              steps 
+            })}
           >
-              <Text style={styles.running__actionIconText}>📊</Text>
-              <Text style={styles.running__actionLabel}>목표달성률</Text>
+            <View style={styles.iconCircle}>
+              <Image 
+                source={require('../../img/오늘걷기중.png')}
+                style={styles.iconImage}
+              />
+            </View>
+            <Text style={styles.achievementText}>目標達成率</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -155,7 +154,7 @@ const styles = StyleSheet.create({
   running__character: {
     backgroundColor: '#FCFAF6',
     width: '100%',
-    height: 393,
+    height: 332,
     marginTop: 40,
     marginBottom: 24,
   },
@@ -244,36 +243,46 @@ const styles = StyleSheet.create({
   running__actions: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    flex: 1,
     width: '100%',
+    paddingHorizontal: 20,
+    height: 150,
+    marginTop: 20,
   },
 
-  // Element: running__actionButton
-  running__actionButton: {
+  achievementItem: {
     alignItems: 'center',
-    flex: 1,
-    backgroundColor: 'black',
-    gap: 8,
-    paddingVertical: 20,
+    width: 120,
+    height: 120,
   },
 
-  // Element: running__actionIconText
-  running__actionIconText: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    textAlign: 'center',
-    fontSize: 24,
-    paddingVertical: 20,
-    paddingHorizontal: 30,
-    marginBottom: 10,
+  iconCircle: {
+    width: "100%",
+    height: "100%",
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    overflow: 'hidden',
   },
 
-  // Element: running__actionLabel
-  running__actionLabel: {
-    fontSize: 14,
-    color: 'white',
-    textAlign: 'center',
+  iconImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+
+  achievementText: {
+    fontSize: 16,
+    color: '#333',
     fontWeight: 'bold',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+
+  image: {
+    width: "100%",
+    height: "100%",
+    resizeMode: 'contain',
+
   },
 });
 
